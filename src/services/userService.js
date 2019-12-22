@@ -3,36 +3,36 @@ import uuid from 'uuid';
 const users = [
     {
         id: uuid.v4(),
-        login: 'test_login_1',
-        password: 'test_password_1',
+        login: 'testlogin1autoSuggest',
+        password: 'testpassword1',
         age: 21,
         isDeleted: false
     },
     {
         id: uuid.v4(),
-        login: 'test_login_2',
-        password: 'test_password_2',
-        age: 22,
-        isDeleted: false
-    },
-    {
-        id: uuid.v4(),
-        login: 'test_login_3',
-        password: 'test_password_3',
+        login: 'testlogin3autoSuggest',
+        password: 'testpassword3',
         age: 23,
         isDeleted: false
     },
     {
         id: uuid.v4(),
-        login: 'test_login_4',
-        password: 'test_password_4',
+        login: 'testlogin2',
+        password: 'testpassword2',
+        age: 22,
+        isDeleted: false
+    },
+    {
+        id: uuid.v4(),
+        login: 'testlogin4',
+        password: 'testpassword4',
         age: 24,
         isDeleted: false
     },
     {
         id: uuid.v4(),
-        login: 'test_login_5',
-        password: 'test_password_5',
+        login: 'testlogin5autoSuggest',
+        password: 'testpassword5',
         age: 25,
         isDeleted: false
     }
@@ -42,10 +42,37 @@ export const getUsers = () => users;
 
 export const getUserById = userId => getUsers().find(({ id }) => id === userId);
 
+export const getAutosuggestedUsers = ({ loginSubstring, limit }) => {
+    const autosuggestedUsers = users
+        .filter(({ login }) => login.toLowerCase().includes((loginSubstring || '').toLowerCase()))
+        .sort((userA, userB) => userA.login < userB.login ? -1 : 1);
+    return autosuggestedUsers.splice(0, limit || autosuggestedUsers.length);
+};
+
 export const deleteUserById = userId => {
     const user = getUserById(userId);
 
     if (user) {
         user.isDeleted = true;
     }
+};
+
+export const addUser = userProps => {
+    users.push({
+        id: uuid.v4(),
+        isDeleted: false,
+        ...userProps
+    });
+};
+
+export const updateUser = ({ id, ...userProps }) => {
+    const user = getUserById(id);
+
+    if (user) {
+        Object.keys(userProps).forEach(key => {
+            user[key] = userProps[key];
+        });
+    }
+
+    return user;
 };
