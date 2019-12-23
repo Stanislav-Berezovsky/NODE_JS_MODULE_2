@@ -6,7 +6,7 @@ const schema = joi.object({
         .required(),
 
     password: joi.string()
-        .alphanum()
+        .pattern(new RegExp('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'))
         .required(),
 
     age: joi.number()
@@ -15,13 +15,20 @@ const schema = joi.object({
         .required()
 });
 
+
 const validate = (req, res, next) => {
     const { error } = schema.validate(req.body, {
-        allowUnknown: false
+        allowUnknown: false,
+        abortEarly: false
     });
 
     if (error && error.isJoi) {
-        res.status(400).json({ message: 'not valid properties' });
+        console.log(error.details);
+        const validationErrors = error.details.map(({ message, context: { label } = {} } = {}) => ({
+            [label]: message
+        }));
+
+        res.status(400).json({ message: 'Bad Reques', validationErrors });
     } else {
         // eslint-disable-next-line callback-return
         next();
