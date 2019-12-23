@@ -2,7 +2,6 @@ import { Router } from 'express';
 import validate from '../services/userValidator';
 import { getUsers, getUserById, deleteUserById, addUser, updateUser, getAutosuggestedUsers } from '../services/userService';
 
-console.log(validate);
 const router = Router();
 
 router.get('/autoSuggest', (req, res) => {
@@ -26,15 +25,17 @@ router.get('/:id', (req, res) => {
     }
 });
 
-// validate should be used there
 router.post('/', validate, (req, res) => {
     console.log('req.body', req.body);
-    const { login, password, age } = JSON.parse(JSON.stringify(req.body)) || {};
-    addUser({ login, password, age });
-    res.json({ message: 'user was successfully added' });
+    const { login, password, age } = req.body || {};
+    const userAdded = addUser({ login, password, age });
+    if (userAdded) {
+        res.json({ message: 'user was successfully added' });
+    } else {
+        res.status(400).json({ message: 'this login is already existed' });
+    }
 });
 
-// validate should be used there
 router.put('/:id', validate, (req, res) => {
     const id = req.params.id;
     const { login, password, age } = req.body || {};

@@ -38,6 +38,8 @@ const users = [
     }
 ];
 
+const checkLoginExisted = userLogin => users.some(({ login }) => userLogin.toLowerCase() === login.toLowerCase());
+
 export const getUsers = () => users;
 
 export const getUserById = userId => getUsers().find(({ id }) => id === userId);
@@ -58,11 +60,14 @@ export const deleteUserById = userId => {
 };
 
 export const addUser = userProps => {
-    users.push({
+    const loginExisted = checkLoginExisted(userProps.login);
+    !loginExisted && users.push({
         id: uuid.v4(),
         isDeleted: false,
         ...userProps
     });
+
+    return !loginExisted;
 };
 
 export const updateUser = ({ id, ...userProps }) => {
