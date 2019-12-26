@@ -74,10 +74,16 @@ export const updateUser = ({ id, ...userProps }) => {
     const user = getUserById(id);
 
     if (user) {
-        Object.keys(userProps).forEach(key => {
-            user[key] = userProps[key];
-        });
+        if (user.login.toLowerCase() === userProps.login.toLowerCase() || !checkLoginExisted(userProps.login)) {
+            Object.keys(userProps).forEach(key => {
+                user[key] = userProps[key];
+            });
+
+            return { status: 200, message: 'user was successfully updated' };
+        }
+
+        return { status: 400, message: 'this login is already existed' };
     }
 
-    return user;
+    return { status: 404, message: 'not found' };
 };

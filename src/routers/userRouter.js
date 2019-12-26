@@ -39,12 +39,8 @@ router.post('/', validate, (req, res) => {
 router.put('/:id', validate, (req, res) => {
     const id = req.params.id;
     const { login, password, age } = req.body || {};
-    const user = updateUser({ id, login, password, age });
-    if (user) {
-        res.json({ message: 'user was successfully updated' });
-    } else {
-        res.status(404).json({ message: 'user not found' });
-    }
+    const { status, message } = updateUser({ id, login, password, age });
+    res.status(status).json({ message });
 });
 
 router.delete('/:id', (req, res) => {
